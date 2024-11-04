@@ -1,6 +1,7 @@
 using System.Reflection;
 using RestaurantAPI;
 using RestaurantWebApi.Entities;
+using RestaurantWebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddControllers();
-
+builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 builder.Services.AddDbContext<RestaurantContext>();
 builder.Services.AddScoped<RestaurantSeeder>();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());

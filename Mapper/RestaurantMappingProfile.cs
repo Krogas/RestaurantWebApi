@@ -14,6 +14,21 @@ namespace RestaurantWebApi.Mapper
                 .ForMember(m => m.Street, c => c.MapFrom(s => s.Address.Street));
 
             CreateMap<Dish, DishDto>();
+
+            CreateMap<CreateRestaurantDto, Restaurant>()
+                .ForMember(
+                    m => m.Address,
+                    c =>
+                        c.MapFrom(
+                            s =>
+                                new Address()
+                                {
+                                    City = s.City,
+                                    PostalCode = s.PostalCode,
+                                    Street = s.Street
+                                }
+                        )
+                );
         }
     }
 }
