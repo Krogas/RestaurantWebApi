@@ -1,9 +1,15 @@
 using System.Reflection;
+using NLog.Web;
 using RestaurantAPI;
 using RestaurantWebApi.Entities;
+using RestaurantWebApi.Middleware;
 using RestaurantWebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// NLog: Setup NLog for Dependency injection
+builder.Logging.ClearProviders();
+builder.Host.UseNLog();
 
 // Add services to the container.
 
@@ -13,6 +19,8 @@ builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 builder.Services.AddDbContext<RestaurantContext>();
 builder.Services.AddScoped<RestaurantSeeder>();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+builder.Services.AddScoped<ErrorHandlingMiddleWare>();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -26,8 +34,13 @@ if (app.Environment.IsDevelopment())
 }
 
 // Configure the HTTP request pipeline.
-
+app.UseMiddleware<ErrorHandlingMiddleWare>();
 app.UseHttpsRedirection();
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Restaurant API");
+});
 
 //app.UseAuthorization();
 
