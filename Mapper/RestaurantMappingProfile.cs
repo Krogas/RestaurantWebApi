@@ -29,6 +29,8 @@ namespace RestaurantWebApi.Mapper
                                 }
                         )
                 );
+
+            CreateMap<CreateDishDto, Dish>();
         }
     }
 }

@@ -16,10 +16,12 @@ builder.Host.UseNLog();
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
+builder.Services.AddScoped<IDishService, DishService>();
 builder.Services.AddDbContext<RestaurantContext>();
 builder.Services.AddScoped<RestaurantSeeder>();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddScoped<ErrorHandlingMiddleWare>();
+builder.Services.AddScoped<WatchTimeMiddleware>();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
@@ -35,6 +37,7 @@ if (app.Environment.IsDevelopment())
 
 // Configure the HTTP request pipeline.
 app.UseMiddleware<ErrorHandlingMiddleWare>();
+app.UseMiddleware<WatchTimeMiddleware>();
 app.UseHttpsRedirection();
 app.UseSwagger();
 app.UseSwaggerUI(c =>

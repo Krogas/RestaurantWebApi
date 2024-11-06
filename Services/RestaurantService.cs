@@ -32,7 +32,7 @@ namespace RestaurantWebApi.Services
 
             if (restaurant is null)
             {
-                throw new NotFoundExceptions("Restaurant not found");
+                throw new NotFoundException("Restaurant not found");
             }
 
             var restaurantDto = _mapper.Map<RestaurantDto>(restaurant);
@@ -69,7 +69,7 @@ namespace RestaurantWebApi.Services
                 _logger.LogError(
                     $"DELETE action on Restaurant IDENTITY: {id} invoked, but not passed no Restaurant available for that ID"
                 );
-                throw new NotFoundExceptions("Restaurant not found");
+                throw new NotFoundException("Restaurant not found");
             }
             _dbContext.Restaurants.Remove(restaurant);
             _dbContext.SaveChanges();
@@ -79,7 +79,7 @@ namespace RestaurantWebApi.Services
         {
             var restaurant = _dbContext.Restaurants.FirstOrDefault(x => x.Id == id);
             if (restaurant is null)
-                throw new NotFoundExceptions("Restaurant not found");
+                throw new NotFoundException("Restaurant not found");
 
             restaurant.Name = dto.Name;
             restaurant.Description = dto.Description;
