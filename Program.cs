@@ -1,6 +1,11 @@
 using System.Reflection;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Identity;
 using NLog.Web;
 using RestaurantAPI;
+using RestaurantWebApi.Dto;
+using RestaurantWebApi.Dto.Validators;
 using RestaurantWebApi.Entities;
 using RestaurantWebApi.Middleware;
 using RestaurantWebApi.Services;
@@ -15,6 +20,7 @@ builder.Host.UseNLog();
 
 
 builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 builder.Services.AddScoped<IDishService, DishService>();
 builder.Services.AddDbContext<RestaurantContext>();
@@ -22,6 +28,9 @@ builder.Services.AddScoped<RestaurantSeeder>();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddScoped<ErrorHandlingMiddleWare>();
 builder.Services.AddScoped<WatchTimeMiddleware>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();

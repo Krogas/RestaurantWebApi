@@ -22,12 +22,12 @@ namespace RestaurantAPI
                     _dbContext.Database.Migrate();
                 }
 
-                /*if (!_dbContext.Roles.Any())
+                if (!_dbContext.Roles.Any())
                 {
                     var roles = GetRoles();
                     _dbContext.Roles.AddRange(roles);
                     _dbContext.SaveChanges();
-                }*/
+                }
 
                 if (!_dbContext.Restaurants.Any())
                 {
@@ -38,17 +38,17 @@ namespace RestaurantAPI
             }
         }
 
-        /*  private IEnumerable<Role> GetRoles()
-          {
-              var roles = new List<Role>()
-              {
-                  new Role() { Name = "User" },
-                  new Role() { Name = "Manager" },
-                  new Role() { Name = "Admin" },
-              };
+        private IEnumerable<Role> GetRoles()
+        {
+            var roles = new List<Role>()
+            {
+                new Role() { Name = "User" },
+                new Role() { Name = "Manager" },
+                new Role() { Name = "Admin" },
+            };
 
-              return roles;
-          }*/
+            return roles;
+        }
 
         private IEnumerable<Restaurant> GetRestaurants()
         {

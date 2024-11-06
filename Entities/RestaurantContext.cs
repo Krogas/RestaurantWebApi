@@ -9,6 +9,9 @@ namespace RestaurantWebApi.Entities
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Dish> Dishes { get; set; }
 
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(_connectionString);
@@ -30,6 +33,16 @@ namespace RestaurantWebApi.Entities
             {
                 entity.Property(d => d.City).IsRequired().HasMaxLength(50);
                 entity.Property(d => d.Street).IsRequired().HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.Property(d => d.EmailAddres).IsRequired().HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<Role>(entity =>
+            {
+                entity.Property(d => d.Name).IsRequired();
             });
         }
     }
