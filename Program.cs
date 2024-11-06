@@ -1,9 +1,12 @@
 using System.Reflection;
+using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using NLog.Web;
 using RestaurantAPI;
+using RestaurantWebApi;
 using RestaurantWebApi.Dto;
 using RestaurantWebApi.Dto.Validators;
 using RestaurantWebApi.Entities;
@@ -15,6 +18,30 @@ var builder = WebApplication.CreateBuilder(args);
 // NLog: Setup NLog for Dependency injection
 builder.Logging.ClearProviders();
 builder.Host.UseNLog();
+
+var authenticationSettings = new AuthenticationSettings();
+builder.Configuration.GetSection("Authentication").Bind(authenticationSettings);
+
+builder
+    .Services.AddAuthentication(option =>
+    {
+        option.DefaultAuthenticateScheme = "Bearer";
+        option.DefaultScheme = "Bearer";
+        option.DefaultChallengeScheme = "Bearer";
+    })
+    .AddJwtBearer(cfg =>
+    {
+        cfg.RequireHttpsMetadata = false;
+        cfg.SaveToken = true;
+        cfg.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+            ValidIssuer = authenticationSettings.JwtIssuer,
+            ValidAudience = authenticationSettings.JwtIssuer,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(authenticationSettings.JwtKey)
+            )
+        };
+    });
 
 // Add services to the container.
 
@@ -29,6 +56,7 @@ builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddScoped<ErrorHandlingMiddleWare>();
 builder.Services.AddScoped<WatchTimeMiddleware>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddSingleton(authenticationSettings);
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 builder.Services.AddSwaggerGen();
@@ -47,6 +75,7 @@ if (app.Environment.IsDevelopment())
 // Configure the HTTP request pipeline.
 app.UseMiddleware<ErrorHandlingMiddleWare>();
 app.UseMiddleware<WatchTimeMiddleware>();
+app.UseAuthentication();
 app.UseHttpsRedirection();
 app.UseSwagger();
 app.UseSwaggerUI(c =>

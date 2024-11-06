@@ -25,5 +25,12 @@ namespace RestaurantWebApi.Controllers
             _service.RegisterUser(registerUserDto);
             return Created();
         }
+
+        [HttpPost("login")]
+        public ActionResult Login([FromBody] LoginDto loginDto)
+        {
+            string token = _service.GenerateToken(loginDto);
+            return Ok(token);
+        }
     }
 }
