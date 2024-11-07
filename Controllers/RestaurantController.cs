@@ -19,9 +19,11 @@ namespace RestaurantWebApi.Controllers
         [HttpGet]
         [Authorize(Policy = "HasNationality")]
         [Authorize(Policy = "CreatedAtLeast2Restaurants")]
-        public ActionResult<IEnumerable<RestaurantDto>> GetAll()
+        public ActionResult<IEnumerable<RestaurantDto>> GetAll(
+            [FromQuery] RestaurantQuery restaurantQuery
+        )
         {
-            return Ok(_restaurantService.GetAll());
+            return Ok(_restaurantService.GetAll(restaurantQuery));
         }
 
         [HttpGet("{restaurantId}")]
