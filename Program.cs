@@ -63,7 +63,14 @@ builder.Services.AddAuthorization(option =>
 builder.Services.AddScoped<IAuthorizationHandler, MinimumAgeRequirementHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, ResourceAutorizationRequirementHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, ResourceCreateCountRequirementHandler>();
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        "FrontEndClient",
+        b =>
+            b.AllowAnyMethod().AllowAnyHeader().WithOrigins(builder.Configuration["AllowedOrigins"])
+    );
+});
 builder.Services.AddControllers();
 builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
@@ -89,6 +96,8 @@ var app = builder.Build();
 var scope = app.Services.CreateScope();
 var seeder = scope.ServiceProvider.GetRequiredService<RestaurantSeeder>();
 
+app.UseStaticFiles();
+app.UseCors("FrontEndClient");
 seeder.Seed();
 if (app.Environment.IsDevelopment())
 {
