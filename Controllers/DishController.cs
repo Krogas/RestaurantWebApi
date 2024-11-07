@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RestaurantWebApi.Dto;
 using RestaurantWebApi.Services;
 
@@ -31,6 +32,7 @@ namespace RestaurantWebApi.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "AtLeast20")]
         public ActionResult<List<DishDto>> Get([FromRoute] int restaurantId)
         {
             return Ok(_service.GetAll(restaurantId));

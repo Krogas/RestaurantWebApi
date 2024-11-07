@@ -1,12 +1,12 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RestaurantWebApi.Dto;
 using RestaurantWebApi.Entities;
 using RestaurantWebApi.Exceptions;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace RestaurantWebApi.Services
 {
@@ -65,6 +65,16 @@ namespace RestaurantWebApi.Services
                 new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
                 new Claim(ClaimTypes.Role, user.Role.Name)
             };
+
+            if (!string.IsNullOrEmpty(user.Nationality))
+            {
+                claims.Add(new Claim("Nationality", user.Nationality));
+            }
+
+            if (!string.IsNullOrEmpty(user.DateOfBirth.Value.ToString()))
+            {
+                claims.Add(new Claim("BirthDate", user.DateOfBirth.Value.ToString("yyy-MM-dd")));
+            }
 
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_authenticationSettings.JwtKey)
