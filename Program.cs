@@ -57,6 +57,7 @@ builder.Services.AddAuthorization(option =>
 });
 
 builder.Services.AddScoped<IAuthorizationHandler, MinimumAgeRequirementHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, ResourceAutorizationRequirementHandler>();
 builder.Services.AddControllers();
 builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
