@@ -54,10 +54,16 @@ builder.Services.AddAuthorization(option =>
         builder => builder.AddRequirements(new MinimumAgeRequirement(20))
     );
     option.AddPolicy("HasNationality", builder => builder.RequireClaim("Nationality", "PL"));
+    option.AddPolicy(
+        "CreatedAtLeast2Restaurants",
+        builder => builder.AddRequirements(new ResourceCreateCountRequirement(2))
+    );
 });
 
 builder.Services.AddScoped<IAuthorizationHandler, MinimumAgeRequirementHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, ResourceAutorizationRequirementHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, ResourceCreateCountRequirementHandler>();
+
 builder.Services.AddControllers();
 builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
