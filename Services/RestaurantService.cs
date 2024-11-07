@@ -5,7 +5,6 @@ using RestaurantWebApi.Authotization;
 using RestaurantWebApi.Dto;
 using RestaurantWebApi.Entities;
 using RestaurantWebApi.Exceptions;
-using System.Security.Claims;
 
 namespace RestaurantWebApi.Services
 {
@@ -15,18 +14,21 @@ namespace RestaurantWebApi.Services
         private readonly IMapper _mapper;
         private readonly ILogger<RestaurantService> _logger;
         private readonly IAuthorizationService _authorizationSerivce;
+        private readonly IUserContextService _userContextService;
 
         public RestaurantService(
             RestaurantContext dbContext,
             IMapper mapper,
             ILogger<RestaurantService> logger,
-            IAuthorizationService authorizationService
+            IAuthorizationService authorizationService,
+            IUserContextService userContextService
         )
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _logger = logger;
             _authorizationSerivce = authorizationService;
+            _userContextService = userContextService;
         }
 
         public RestaurantDto GetById(int id)
@@ -56,17 +58,17 @@ namespace RestaurantWebApi.Services
             return restaurantDto;
         }
 
-        public int Create(CreateRestaurantDto createRestaurantDto, int userId)
+        public int Create(CreateRestaurantDto createRestaurantDto)
         {
             var restaurant = _mapper.Map<Restaurant>(createRestaurantDto);
-            restaurant.CreatedById = userId;
+            restaurant.CreatedById = _userContextService.GetUserId;
             _dbContext.Restaurants.Add(restaurant);
             _dbContext.SaveChanges();
 
             return restaurant.Id;
         }
 
-        public void Delete(int id, ClaimsPrincipal user)
+        public void Delete(int id)
         {
             _logger.LogWarning($"DELETE action on Restaurant IDENTITY: {id} invoked");
 
@@ -80,7 +82,7 @@ namespace RestaurantWebApi.Services
             }
             var authorizationResult = _authorizationSerivce
                 .AuthorizeAsync(
-                    user,
+                    _userContextService.User,
                     restaurant,
                     new ResourceAutorizationRequirement(ResourceOperation.Delete)
                 )
@@ -93,7 +95,7 @@ namespace RestaurantWebApi.Services
             _dbContext.SaveChanges();
         }
 
-        public void Update(int id, UpdateRestaurantDto dto, ClaimsPrincipal user)
+        public void Update(int id, UpdateRestaurantDto dto)
         {
             var restaurant = _dbContext.Restaurants.FirstOrDefault(x => x.Id == id);
             if (restaurant is null)
@@ -101,7 +103,7 @@ namespace RestaurantWebApi.Services
 
             var authorizationResult = _authorizationSerivce
                 .AuthorizeAsync(
-                    user,
+                    _userContextService.User,
                     restaurant,
                     new ResourceAutorizationRequirement(ResourceOperation.Update)
                 )

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using RestaurantWebApi.Dto;
 using RestaurantWebApi.Services;
-using System.Security.Claims;
 
 namespace RestaurantWebApi.Controllers
 {
@@ -37,7 +36,7 @@ namespace RestaurantWebApi.Controllers
         public ActionResult CreateRestaurant([FromBody] CreateRestaurantDto createRestaurantDto)
         {
             return Created(
-                $"api/restaurant/{_restaurantService.Create(createRestaurantDto, int.Parse(User.FindFirst(d => d.Type == ClaimTypes.NameIdentifier).Value))}",
+                $"api/restaurant/{_restaurantService.Create(createRestaurantDto)}",
                 null
             );
         }
@@ -45,7 +44,7 @@ namespace RestaurantWebApi.Controllers
         [HttpDelete("{restaurantId}")]
         public ActionResult DeleteRestaurant([FromRoute] int restaurantId)
         {
-            _restaurantService.Delete(restaurantId, User);
+            _restaurantService.Delete(restaurantId);
 
             return NoContent();
         }
@@ -53,7 +52,7 @@ namespace RestaurantWebApi.Controllers
         [HttpPut("{id}")]
         public ActionResult Update([FromBody] UpdateRestaurantDto dto, [FromRoute] int id)
         {
-            _restaurantService.Update(id, dto, User);
+            _restaurantService.Update(id, dto);
 
             return Ok();
         }
