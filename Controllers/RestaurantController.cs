@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RestaurantWebApi.Dto;
 using RestaurantWebApi.Services;
 
@@ -30,6 +31,7 @@ namespace RestaurantWebApi.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin, Manager")]
         public ActionResult CreateRestaurant([FromBody] CreateRestaurantDto createRestaurantDto)
         {
             return Created(
